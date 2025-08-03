@@ -24,10 +24,18 @@ async function run() {
 
     const database = client.db("AllProducts");
     const productsCollection = database.collection("products");
-
+    // ===================== all product start ==============
     app.get("/all-products", async (req, res) => {
       const cursor = productsCollection.find();
       const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // get single product
+    app.get("/all-products/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await productsCollection.findOne(query);
       res.send(result);
     });
 
@@ -36,8 +44,8 @@ async function run() {
       const result = await productsCollection.insertOne(newProduct);
       res.send(result);
       console.log(result);
-      
     });
+    //===================== all product end ===============
 
     await client.db("admin").command({ ping: 1 });
     console.log(
