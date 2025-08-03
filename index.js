@@ -8,7 +8,7 @@ require("dotenv").config();
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv%3A//${process.env.DB_USER}%3A${process.env.DB_PASSWORD}%40shopo-server.putq3dw.mongodb.net/?retryWrites=true&w=majority&appName=ShopO-Server`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@shopo-server.putq3dw.mongodb.net/?retryWrites=true&w=majority&appName=ShopO-Server`;
 
 const client = new MongoClient(uri, {
   serverApi: {
