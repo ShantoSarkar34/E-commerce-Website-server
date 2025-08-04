@@ -24,6 +24,7 @@ async function run() {
 
     const database = client.db("AllProducts");
     const productsCollection = database.collection("products");
+    const cartsCollection = database.collection("all-carts");
     // ===================== all product start ==============
     app.get("/all-products", async (req, res) => {
       const cursor = productsCollection.find();
@@ -43,9 +44,35 @@ async function run() {
       const newProduct = req.body;
       const result = await productsCollection.insertOne(newProduct);
       res.send(result);
-      console.log(result);
     });
-    //===================== all product end ===============
+    //===================== add to cartstart ===============
+
+    app.get("/all-carts", async (req, res) => {
+      const cursor = cartsCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // get single cart
+    app.get("/all-carts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await cartsCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.post("/all-carts", async (req, res) => {
+      const newCart = req.body;
+      const result = await cartsCollection.insertOne(newCart);
+      res.send(result);
+    });
+
+    app.delete("/all-carts/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await cartsCollection.deleteOne(query);
+      res.send(result);
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log(
