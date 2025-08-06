@@ -25,6 +25,7 @@ async function run() {
     const database = client.db("AllProducts");
     const productsCollection = database.collection("products");
     const cartsCollection = database.collection("all-carts");
+    const likeCollection = database.collection("like-list");
     // ===================== all product start ==============
     app.get("/all-products", async (req, res) => {
       const cursor = productsCollection.find();
@@ -35,9 +36,10 @@ async function run() {
     // get single product
     app.get("/all-products/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
+      const query = { _id: id };
       const result = await productsCollection.findOne(query);
       res.send(result);
+      console.log(result);
     });
 
     app.post("/all-products", async (req, res) => {
@@ -45,7 +47,8 @@ async function run() {
       const result = await productsCollection.insertOne(newProduct);
       res.send(result);
     });
-    //===================== add to cartstart ===============
+
+    //===================== add to cart start ===============
 
     app.get("/all-carts", async (req, res) => {
       const cursor = cartsCollection.find();
@@ -73,6 +76,37 @@ async function run() {
       const result = await cartsCollection.deleteOne(query);
       res.send(result);
     });
+
+    // ================= all like list start =================
+
+    app.get("/liked-items", async (req, res) => {
+      const cursor = likeCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // get single cart
+    app.get("/liked-items/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await cartsCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.post("/liked-items", async (req, res) => {
+      const newCart = req.body;
+      const result = await likeCollection.insertOne(newCart);
+      res.send(result);
+    });
+
+    app.delete("/liked-items/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await likeCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // ================= *** ====================
 
     await client.db("admin").command({ ping: 1 });
     console.log(
