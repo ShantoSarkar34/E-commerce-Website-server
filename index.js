@@ -26,6 +26,7 @@ async function run() {
     const productsCollection = database.collection("products");
     const cartsCollection = database.collection("all-carts");
     const likeCollection = database.collection("like-list");
+    const userCollection = database.collection("users");
     // ===================== all product start ==============
     app.get("/all-products", async (req, res) => {
       const cursor = productsCollection.find();
@@ -106,7 +107,22 @@ async function run() {
       res.send(result);
     });
 
+    // ================= user data ==============
+    
+    app.get("/all-users", async (req, res) => {
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.post("/all-users", async (req, res) => {
+      const newUser = req.body;
+      const result = await userCollection.insertOne(newUser);
+      res.send(result);
+    });
+
     // ================= *** ====================
+
 
     await client.db("admin").command({ ping: 1 });
     console.log(
