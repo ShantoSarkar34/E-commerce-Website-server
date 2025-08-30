@@ -27,6 +27,7 @@ async function run() {
     const cartsCollection = database.collection("all-carts");
     const likeCollection = database.collection("like-list");
     const userCollection = database.collection("users");
+    const sellerCollection = database.collection("sellers");
     // ===================== all product start ==============
     app.get("/all-products", async (req, res) => {
       const cursor = productsCollection.find();
@@ -120,6 +121,29 @@ async function run() {
       const result = await userCollection.insertOne(newUser);
       res.send(result);
     });
+
+    // ================= seller data ==============
+    
+    app.get("/all-seller", async (req, res) => {
+      const cursor = sellerCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+        // get single seller
+    app.get("/all-seller/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await sellerCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.post("/all-seller", async (req, res) => {
+      const newSeller = req.body;
+      const result = await sellerCollection.insertOne(newSeller);
+      res.send(result);
+    });
+
 
     // ================= *** ====================
 
