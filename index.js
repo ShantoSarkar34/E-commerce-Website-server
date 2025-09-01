@@ -109,11 +109,28 @@ async function run() {
     });
 
     // ================= user data ==============
-    
+
     app.get("/all-users", async (req, res) => {
       const cursor = userCollection.find();
       const result = await cursor.toArray();
       res.send(result);
+    });
+
+    // get user by email
+    app.get("/all-users/:email", async (req, res) => {
+      try {
+        const email = req.params.email.toLowerCase();
+
+        const user = await userCollection.findOne({ email });
+
+        if (!user) {
+          return res.status(404).send({ message: "User not found" });
+        }
+        res.send(user);
+      } catch (error) {
+        console.error("Error fetching user by email:", error);
+        res.status(500).send({ error: "Internal server error" });
+      }
     });
 
     app.post("/all-users", async (req, res) => {
@@ -123,14 +140,14 @@ async function run() {
     });
 
     // ================= seller data ==============
-    
+
     app.get("/all-seller", async (req, res) => {
       const cursor = sellerCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
 
-        // get single seller
+    // get single seller
     app.get("/all-seller/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -144,7 +161,22 @@ async function run() {
       res.send(result);
     });
 
-    // delete seller 
+    // update role from admin
+    app.put("/all-seller/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const update = req.body;
+      const updatedInfo = {
+        $set: {
+          sellerStatus: update.sellerStatus,
+          becomeSellerAt: update.becomeSellerAt,
+        },
+      };
+      const result = await sellerCollection.updateOne(filter, updatedInfo);
+      res.send(result);
+    });
+
+    // delete seller
     app.delete("/all-seller/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -152,10 +184,7 @@ async function run() {
       res.send(result);
     });
 
-
     // ================= *** ====================
-
-
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
